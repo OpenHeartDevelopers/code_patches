@@ -1,0 +1,44 @@
+diff --git a/Modules/CppMicroServices/core/src/service/usServiceListeners.cpp b/Modules/CppMicroServices/core/src/service/usServiceListeners.cpp
+index 39217e79ea..29b46e008a 100644
+--- a/Modules/CppMicroServices/core/src/service/usServiceListeners.cpp
++++ b/Modules/CppMicroServices/core/src/service/usServiceListeners.cpp
+@@ -79,7 +79,7 @@ void ServiceListeners::AddModuleListener(ModuleContext* mc, const ModuleListener
+ {
+   MutexLock lock(moduleListenerMapMutex);
+   ModuleListenerMap::value_type::second_type& listeners = moduleListenerMap[mc];
+-  if (std::find_if(listeners.begin(), listeners.end(), std::bind1st(ModuleListenerCompare(), std::make_pair(listener, data))) == listeners.end())
++  if (std::find_if(listeners.begin(), listeners.end(), std::bind(ModuleListenerCompare(), std::make_pair(listener, data), std::placeholders::_1)) == listeners.end())
+   {
+     listeners.push_back(std::make_pair(listener, data));
+   }
+@@ -88,7 +88,7 @@ void ServiceListeners::AddModuleListener(ModuleContext* mc, const ModuleListener
+ void ServiceListeners::RemoveModuleListener(ModuleContext* mc, const ModuleListener& listener, void* data)
+ {
+   MutexLock lock(moduleListenerMapMutex);
+-  moduleListenerMap[mc].remove_if(std::bind1st(ModuleListenerCompare(), std::make_pair(listener, data)));
++  moduleListenerMap[mc].remove_if(std::bind(ModuleListenerCompare(), std::make_pair(listener, data), std::placeholders::_1));
+ }
+ 
+ void ServiceListeners::ModuleChanged(const ModuleEvent& evt)
+diff --git a/Modules/CppMicroServices/core/src/util/usListenerFunctors_p.h b/Modules/CppMicroServices/core/src/util/usListenerFunctors_p.h
+index 8bbe3a2d8a..581d281ed8 100644
+--- a/Modules/CppMicroServices/core/src/util/usListenerFunctors_p.h
++++ b/Modules/CppMicroServices/core/src/util/usListenerFunctors_p.h
+@@ -50,7 +50,7 @@
+ US_BEGIN_NAMESPACE
+   template<class X>
+   US_MODULE_LISTENER_FUNCTOR ModuleListenerMemberFunctor(X* x, void (X::*memFn)(const US_PREPEND_NAMESPACE(ModuleEvent)))
+-  { return std::bind1st(std::mem_fun(memFn), x); }
++  { return std::bind(std::mem_fn(memFn), x, std::placeholders::_1); }
+ 
+   struct ModuleListenerCompare : std::binary_function<std::pair<US_MODULE_LISTENER_FUNCTOR, void*>,
+                                                       std::pair<US_MODULE_LISTENER_FUNCTOR, void*>, bool>
+@@ -65,7 +65,7 @@ US_BEGIN_NAMESPACE
+ 
+   template<class X>
+   US_SERVICE_LISTENER_FUNCTOR ServiceListenerMemberFunctor(X* x, void (X::*memFn)(const US_PREPEND_NAMESPACE(ServiceEvent)))
+-  { return std::bind1st(std::mem_fun(memFn), x); }
++  { return std::bind(std::mem_fn(memFn), x, std::placeholders::_1); }
+ 
+   struct ServiceListenerCompare : std::binary_function<US_SERVICE_LISTENER_FUNCTOR, US_SERVICE_LISTENER_FUNCTOR, bool>
+   {
