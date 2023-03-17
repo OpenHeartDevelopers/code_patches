@@ -1,0 +1,11 @@
+--- Modules/ThirdParty/VNL/src/vxl/vcl/vcl_compiler.h	2023-02-27 14:18:06.767318170 +0000
++++ /home/jsl19/dev/build/CEMRGv2018.04.2/ep/src/ITK/Modules/ThirdParty/VNL/src/vxl/vcl/vcl_compiler.h	2018-08-08 23:55:29.000000000 +0100
+@@ -98,7 +98,7 @@
+ #   define VCL_GCC_80
+ #  endif
+ # else
+-#  define VCL_GCC_94 
++#  error "Dunno about this gcc"
+ # endif
+ #endif
+ 

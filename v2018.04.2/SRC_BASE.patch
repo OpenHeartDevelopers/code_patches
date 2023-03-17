@@ -1,0 +1,25 @@
+diff --git a/Applications/AppList.cmake b/Applications/AppList.cmake
+index 96d4a8abb8..7383d69b3c 100644
+--- a/Applications/AppList.cmake
++++ b/Applications/AppList.cmake
+@@ -3,7 +3,7 @@
+ # allow early dependency checking
+ 
+ option(MITK_BUILD_APP_CoreApp "Build the MITK CoreApp" OFF)
+-option(MITK_BUILD_APP_Workbench "Build the MITK Workbench executable" ON)
++option(MITK_BUILD_APP_Workbench "Build the MITK Workbench executable" OFF)
+ option(MITK_BUILD_APP_Diffusion "Build the MITK Diffusion executable" OFF)
+ 
+ # This variable is fed to ctkFunctionSetupPlugins() macro in the
+diff --git a/Plugins/org.blueberry.core.jobs/src/internal/berryJobManager.cpp b/Plugins/org.blueberry.core.jobs/src/internal/berryJobManager.cpp
+index 507bf6ab28..92421a018f 100644
+--- a/Plugins/org.blueberry.core.jobs/src/internal/berryJobManager.cpp
++++ b/Plugins/org.blueberry.core.jobs/src/internal/berryJobManager.cpp
+@@ -459,6 +459,7 @@ void JobManager::ChangeState(InternalJob::Pointer sptr_job, int newState)
+     case Job::SLEEPING:
+       m_JobQueueSleeping.Remove(sptr_job);
+       // assert(false, "Tried to remove a job that wasn't in the queue");
++      break;
+ 
+     case Job::RUNNING:
+     case InternalJob::ABOUT_TO_RUN:

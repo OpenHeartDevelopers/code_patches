@@ -1,0 +1,119 @@
+diff --git a/CMake/mitkFunctionCheckCompilerFlags.cmake b/CMake/mitkFunctionCheckCompilerFlags.cmake
+index a6081c4467..5380858f89 100644
+--- a/CMake/mitkFunctionCheckCompilerFlags.cmake
++++ b/CMake/mitkFunctionCheckCompilerFlags.cmake
+@@ -83,12 +83,12 @@ function(mitkFunctionCheckCAndCXXCompilerFlags FLAG_TO_TEST C_RESULT_VAR CXX_RES
+   # the HAS_CXX_FLAG and HAS_C_FLAG variable. This suffix is created using a 'clean version' of the
+   # flag to test. The value of HAS_C(XX)_FLAG_${suffix} additonally needs to be a valid
+   # pre-processor token because CHECK_CXX_COMPILER_FLAG adds it as a definition to the compiler
+-  # arguments. An invalid token triggers compiler warnings, which in case of the "-Werror" flag
++  # arguments. An invalid token triggers compiler warnings, which in case of the "-Wno-error" flag
+   # leads to false-negative checks.
+   string(REGEX REPLACE "[/-]" "_" suffix ${FLAG_TO_TEST})
+   string(REGEX REPLACE "[, \\$\\+\\*\\{\\}\\(\\)\\#]" "" suffix ${suffix})
+ 
+-  # workaround for gcc's strange behaviour on -Wno-... options in combination with -Werror
++  # workaround for gcc's strange behaviour on -Wno-... options in combination with -Wno-error
+   # we test the flag without the "no-" prefix because that is more reliable
+   string(REGEX REPLACE "^-Wno-" "-W" FLAG_TO_TEST_FIXED ${FLAG_TO_TEST})
+ 
+diff --git a/CMake/mitkFunctionCreateModule.cmake b/CMake/mitkFunctionCreateModule.cmake
+index ce984559eb..1301840198 100644
+--- a/CMake/mitkFunctionCreateModule.cmake
++++ b/CMake/mitkFunctionCreateModule.cmake
+@@ -350,7 +350,7 @@ function(mitk_create_module)
+ 	# reactivated after https://gitlab.kitware.com/cmake/cmake/issues/17904 has been fixed.
+         # mitkFunctionCheckCAndCXXCompilerFlags("/w34100" module_c_flags module_cxx_flags)
+       else()
+-        mitkFunctionCheckCAndCXXCompilerFlags(-Werror module_c_flags module_cxx_flags)
++        mitkFunctionCheckCAndCXXCompilerFlags(-Wno-error module_c_flags module_cxx_flags)
+ 
+         # The flag "c++0x-static-nonintegral-init" has been renamed in newer Clang
+         # versions to "static-member-init", see
+@@ -364,7 +364,7 @@ function(mitk_create_module)
+         #
+         # So instead of using -Wno-* we use -Wno-error=*, which will be properly rejected by
+         # the compiler and if applicable, prints the specific warning as a real warning and
+-        # not as an error (although -Werror was given).
++        # not as an error (although -Wno-error was given).
+ 
+         mitkFunctionCheckCAndCXXCompilerFlags("-Wno-error=c++0x-static-nonintegral-init" module_c_flags module_cxx_flags)
+         mitkFunctionCheckCAndCXXCompilerFlags("-Wno-error=static-member-init" module_c_flags module_cxx_flags)
+diff --git a/CMake/mitkFunctionCreatePlugin.cmake b/CMake/mitkFunctionCreatePlugin.cmake
+index 1c5faf618e..4c2f60e8fa 100644
+--- a/CMake/mitkFunctionCreatePlugin.cmake
++++ b/CMake/mitkFunctionCreatePlugin.cmake
+@@ -207,7 +207,7 @@ function(mitk_create_plugin)
+     if(MSVC_VERSION)
+       mitkFunctionCheckCAndCXXCompilerFlags("/WX" plugin_c_flags plugin_cxx_flags)
+     else()
+-      mitkFunctionCheckCAndCXXCompilerFlags(-Werror plugin_c_flags plugin_cxx_flags)
++      mitkFunctionCheckCAndCXXCompilerFlags(-Wno-error plugin_c_flags plugin_cxx_flags)
+       mitkFunctionCheckCAndCXXCompilerFlags("-Wno-error=c++0x-static-nonintegral-init" plugin_c_flags plugin_cxx_flags)
+       mitkFunctionCheckCAndCXXCompilerFlags("-Wno-error=static-member-init" plugin_c_flags plugin_cxx_flags)
+       mitkFunctionCheckCAndCXXCompilerFlags("-Wno-error=unknown-warning" plugin_c_flags plugin_cxx_flags)
+diff --git a/Modules/CppMicroServices/CMakeLists.txt b/Modules/CppMicroServices/CMakeLists.txt
+index afcc73d72e..3a3363fcea 100644
+--- a/Modules/CppMicroServices/CMakeLists.txt
++++ b/Modules/CppMicroServices/CMakeLists.txt
+@@ -169,7 +169,7 @@ endif()
+ 
+ # Set C++ compiler flags
+ if(NOT MSVC)
+-  foreach(_cxxflag  -Werror -Wall -Wextra -Wpointer-arith -Winvalid-pch -Wcast-align
++  foreach(_cxxflag  -Wno-error -Wall -Wextra -Wpointer-arith -Winvalid-pch -Wcast-align
+                     -Wwrite-strings -Woverloaded-virtual -Wnon-virtual-dtor -Wold-style-cast
+                     -Wstrict-null-sentinel -Wsign-promo -fdiagnostics-show-option)
+     usFunctionCheckCompilerFlags(${_cxxflag} US_CXX_FLAGS)
+diff --git a/Modules/CppMicroServices/cmake/usFunctionCheckCompilerFlags.cmake b/Modules/CppMicroServices/cmake/usFunctionCheckCompilerFlags.cmake
+index 0ec97da19f..2ce565ee22 100644
+--- a/Modules/CppMicroServices/cmake/usFunctionCheckCompilerFlags.cmake
++++ b/Modules/CppMicroServices/cmake/usFunctionCheckCompilerFlags.cmake
+@@ -55,7 +55,7 @@ function(usFunctionCheckCompilerFlags FLAG_TO_TEST RESULT_VAR)
+   # the HAS_CXX_FLAG variable. This suffix is created using a 'clean version' of the
+   # flag to test. The value of HAS_CXX_FLAG_${suffix} additonally needs to be a valid
+   # pre-processor token because CHECK_CXX_COMPILER_FLAG adds it as a definition to the compiler
+-  # arguments. An invalid token triggers compiler warnings, which in case of the "-Werror" flag
++  # arguments. An invalid token triggers compiler warnings, which in case of the "-Wno-error" flag
+   # leads to false-negative checks.
+   string(REGEX REPLACE "[/-]" "_" suffix ${FLAG_TO_TEST})
+   string(REGEX REPLACE "[, \\$\\+\\*\\{\\}\\(\\)\\#]" "" suffix ${suffix})
+diff --git a/Modules/QtOverlays/CMakeLists.txt b/Modules/QtOverlays/CMakeLists.txt
+index 152ef26666..8ddd0043e9 100644
+--- a/Modules/QtOverlays/CMakeLists.txt
++++ b/Modules/QtOverlays/CMakeLists.txt
+@@ -3,7 +3,7 @@
+ # In file included from /Users/Cordes/developing/src/MITK-Master/Modules/Overlays/QmitkScalarBar.cpp:20:
+ # In file included from /Users/Cordes/dartclients/toolkits/qt-4.8.4-Build/include/QtGui/QPaintEvent:1:
+ # In file included from /Users/Cordes/dartclients/toolkits/qt-4.8.4-Build/include/QtGui/qevent.h:52:
+-# /Users/Cordes/dartclients/toolkits/qt-4.8.4-Build/include/QtGui/qmime.h:119:10: error: private field 'type' is not used [-Werror,-Wunused-private-field]
++# /Users/Cordes/dartclients/toolkits/qt-4.8.4-Build/include/QtGui/qmime.h:119:10: error: private field 'type' is not used [-Wno-error,-Wunused-private-field]
+ #     char type;
+ #           ^
+ # 1 error generated.
+diff --git a/Wrapping/Python/PackageUtility/imagefiles/imagefiles/install-gcc.sh b/Wrapping/Python/PackageUtility/imagefiles/imagefiles/install-gcc.sh
+index b36458f281..832012e294 100755
+--- a/Wrapping/Python/PackageUtility/imagefiles/imagefiles/install-gcc.sh
++++ b/Wrapping/Python/PackageUtility/imagefiles/imagefiles/install-gcc.sh
+@@ -469,7 +469,7 @@ for ar in ${ARS[@]} ; do
+         case "$d" in
+             binutils-*)
+                 # Binutils will not compile with strict error
+-                # checking on so I disabled -Werror by setting
++                # checking on so I disabled -Wno-error by setting
+                 # --disable-werror.
+                 CONF_ARGS=(
+                     --disable-cloog-version-check
+diff --git a/Wrapping/Python/PackageUtility/imagefiles/install-gcc.sh b/Wrapping/Python/PackageUtility/imagefiles/install-gcc.sh
+index b36458f281..832012e294 100755
+--- a/Wrapping/Python/PackageUtility/imagefiles/install-gcc.sh
++++ b/Wrapping/Python/PackageUtility/imagefiles/install-gcc.sh
+@@ -469,7 +469,7 @@ for ar in ${ARS[@]} ; do
+         case "$d" in
+             binutils-*)
+                 # Binutils will not compile with strict error
+-                # checking on so I disabled -Werror by setting
++                # checking on so I disabled -Wno-error by setting
+                 # --disable-werror.
+                 CONF_ARGS=(
+                     --disable-cloog-version-check
