@@ -1,6 +1,5 @@
-diff --recursive --text --unified --new-file ./cmake/EigenConfigureTesting.cmake /home/jsl19/dev/build/CEMRGv2018.04.2/ep/src/tmp/eigen-eigen-07105f7124f9/cmake/EigenConfigureTesting.cmake
 --- ./cmake/EigenConfigureTesting.cmake	2023-02-27 14:09:46.056285681 +0000
-+++ /home/jsl19/dev/build/CEMRGv2018.04.2/ep/src/tmp/eigen-eigen-07105f7124f9/cmake/EigenConfigureTesting.cmake	2016-02-16 13:26:15.000000000 +0000
++++ ./cmake/EigenConfigureTesting.cmake	2016-02-16 13:26:15.000000000 +0000
 @@ -14,6 +14,13 @@
  # check whether /bin/bash exists
  find_file(EIGEN_BIN_BASH_EXISTS "/bin/bash" PATHS "/" NO_DEFAULT_PATH)
